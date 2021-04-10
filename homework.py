@@ -78,7 +78,7 @@ class CashCalculator(Calculator):
                 return (f'На сегодня осталось {round(diff_eur, 2)} Euro')
             elif self.get_today_stats() == self.limit:
                 return ('Денег нет, держись')
-            elif self.get_today_stats() > self.limit:
+            else:
                 return ('Денег нет, держись: твой долг - '
                         f'{abs(round(diff_eur, 2))} Euro')
 
@@ -88,7 +88,7 @@ class CashCalculator(Calculator):
                 return (f'На сегодня осталось {round(diff_usd, 2)} USD')
             elif self.get_today_stats() == self.limit:
                 return ('Денег нет, держись')
-            elif self.get_today_stats() > self.limit:
+            else:
                 return ('Денег нет, держись: твой долг - '
                         f'{abs(round(diff_usd, 2))} USD')
 
@@ -98,6 +98,6 @@ class CashCalculator(Calculator):
                 return (f'На сегодня осталось {round(diff_rub, 2)} руб')
             elif self.get_today_stats() == self.limit:
                 return ('Денег нет, держись')
-            elif self.get_today_stats() > self.limit:
+            else:
                 return ('Денег нет, держись: твой долг - '
                         f'{abs(round(diff_rub, 2))} руб')
