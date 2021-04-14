@@ -27,16 +27,23 @@ class Calculator:
                          if week_stats <= record.date < week_stat_fut)
         return week_count
 
+    def diff_today_stats(self):
+        difference = self.limit - self.get_today_stats()
+        return difference
+
 
 class Record:
     """Создаем класс для удобного хранения записей. """
 
     def __init__(self, amount, comment,
-                 date=dt.datetime.now().strftime("%d.%m.%Y")):
+                 date=None):
         """Заполняем его основнвые свойства. """
         self.amount = amount
         self.comment = comment
-        self.date = dt.datetime.strptime(date, '%d.%m.%Y').date()
+        if date is None:
+            self.date = dt.datetime.now().date()
+        else:
+            self.date = dt.datetime.strptime(date, '%d.%m.%Y').date()
 
 
 class CaloriesCalculator(Calculator):
@@ -44,10 +51,9 @@ class CaloriesCalculator(Calculator):
     def get_calories_remained(self):
         """Функция подсчета калорий за день с выводом результата. """
         if self.get_today_stats() < self.limit:
-            difference = self.limit - self.get_today_stats()
             return ('Сегодня можно съесть что-нибудь ещё, но с общей '
-                    f'калорийностью не более {difference} кКал')
-        return ('Хватит есть!')
+                    f'калорийностью не более {self.diff_today_stats()} кКал')
+        return 'Хватит есть!'
 
 
 class CashCalculator(Calculator):
@@ -66,27 +72,17 @@ class CashCalculator(Calculator):
     def get_today_cash_remained(self, currency):
         """Функция подсчета трат за день с выводом результа
         в разной валюте. """
-
+        currencies = {
+            'eur': (self.EURO_RATE, 'Euro'),
+            'usd': (self.USD_RATE, 'USD'),
+            'rub': (self.RUB_RATE, 'руб')
+        }
+        cur_rate, output_format = currencies[currency]
         if self.get_today_stats() == self.limit:
-            return ('Денег нет, держись')
+            return 'Денег нет, держись'
 
-        if currency == 'eur':
-            diff_eur = (self.limit - self.get_today_stats()) / self.EURO_RATE
-            if self.get_today_stats() < self.limit:
-                return (f'На сегодня осталось {round(diff_eur, 2)} Euro')
-            return ('Денег нет, держись: твой долг - '
-                    f'{abs(round(diff_eur, 2))} Euro')
-
-        if currency == 'usd':
-            diff_usd = (self.limit - self.get_today_stats()) / self.USD_RATE
-            if self.get_today_stats() < self.limit:
-                return (f'На сегодня осталось {round(diff_usd, 2)} USD')
-            return ('Денег нет, держись: твой долг - '
-                    f'{abs(round(diff_usd, 2))} USD')
-
-        if currency == 'rub':
-            diff_rub = (self.limit - self.get_today_stats()) / self.RUB_RATE
-            if self.get_today_stats() < self.limit:
-                return (f'На сегодня осталось {round(diff_rub, 2)} руб')
-            return ('Денег нет, держись: твой долг - '
-                    f'{abs(round(diff_rub, 2))} руб')
+        diff_curr = self.diff_today_stats() / cur_rate
+        if self.get_today_stats() < self.limit:
+            return f'На сегодня осталось {round(diff_curr, 2)} {output_format}'
+        return ('Денег нет, держись: твой долг - '
+                f'{abs(round(diff_curr, 2))} {output_format}')
