@@ -4,7 +4,7 @@ import datetime as dt
 class Calculator:
     """Создаем основной(родительский) класс нашего калькулятора. """
 
-    def __init__(self, limit,):
+    def __init__(self, limit):
         """Задаем основные свойства класса."""
         self.limit = limit
         self.records = []
@@ -58,26 +58,21 @@ class CaloriesCalculator(Calculator):
 
 class CashCalculator(Calculator):
     """Создаем класс для денежного калькулятора """
-    EURO_RATE = 91
-    USD_RATE = 77
-    RUB_RATE = 1
+    EURO_RATE = 70.0
+    USD_RATE = 60.0
+    RUB_RATE = 1.0
 
-    def __init__(self, limit, EURO_RATE=91, USD_RATE=77, RUB_RATE=1):
-        """Заполняем его основные свойства. """
-        super().__init__(limit)
-        self.EURO_RATE = float(EURO_RATE)
-        self.USD_RATE = float(USD_RATE)
-        self.RUB_RATE = float(RUB_RATE)
+    currencies = {
+        'eur': (EURO_RATE, 'Euro'),
+        'usd': (USD_RATE, 'USD'),
+        'rub': (RUB_RATE, 'руб')
+    }
 
     def get_today_cash_remained(self, currency):
         """Функция подсчета трат за день с выводом результа
         в разной валюте. """
-        currencies = {
-            'eur': (self.EURO_RATE, 'Euro'),
-            'usd': (self.USD_RATE, 'USD'),
-            'rub': (self.RUB_RATE, 'руб')
-        }
-        cur_rate, output_format = currencies[currency]
+
+        cur_rate, output_format = self.currencies[currency]
         if self.get_today_stats() == self.limit:
             return 'Денег нет, держись'
 
